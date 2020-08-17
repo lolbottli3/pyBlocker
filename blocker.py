@@ -187,7 +187,7 @@ def doTask(command):
             wtb = input("Please provide the site you want to block: ")
         else:
             wtb = command.split(" ")[1].lower()
-        if wtb == "":
+        if wtb == "" or wtb == " ":
             print("You didn't provide a website!")
             return
         if "." not in wtb:
@@ -213,8 +213,6 @@ def doTask(command):
                 content = hosts.readlines()
                 hosts.seek(0)
                 for line in content:
-                    if "kali" in line or "localhost" in line:
-                        continue
                     if wtb in line:
                         print("The site is already blocked!")
                         break
