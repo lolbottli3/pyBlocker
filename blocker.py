@@ -157,13 +157,12 @@ def doTask(command):
                 content = hosts.readlines()
                 hosts.seek(0)
                 for line in content:
-                    if line.startswith("redirect"):
-                        if redirect in line and line.count(" ") == 1:
-                            site = line.split(" ")[1]
-                            if site.endswith("\n"):
-                                site = site.replace("\n", "")
-                            if site != "localhost" and site != "kali" and site != "ip6-allnodes" and site != "ip6-allrouters":
-                                sites.append(site)
+                    if redirect in line and line.count(" ") == 1:
+                        site = line.split(" ")[1]
+                        if site.endswith("\n"):
+                            site = site.replace("\n", "")
+                        if site != "localhost" and site != "kali" and site != "ip6-allnodes" and site != "ip6-allrouters":
+                            sites.append(site)
         sites1 = str(sites)
         #sites2 = sites1.replace(", ", "\n")
         sites2 = sites1.replace("[", "")
