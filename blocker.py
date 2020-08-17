@@ -219,8 +219,11 @@ def doTask(command):
         #sl = searched line
         #sl = redirect + " " + wtu
         #sl2 = redirect + " www." + wtu
-        if wtu == "":
+        if wtu == "" or wtu == " ":
             print("You didn't provide a website!")
+            return
+        if "localhost" in wtu:
+            print(wtu + " can't be blocked.")
             return
         writable = []
         all = []
