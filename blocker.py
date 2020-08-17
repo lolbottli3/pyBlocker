@@ -3,14 +3,14 @@ from datetime import datetime #current time
 import sys #exit
 import os #clear console (cls)
 import random
+import platform
 #alapból elküld egy console-t, majd egy switch átvált
 isSent = False
 command = ""
-hostsPath="C:\Windows\System32\drivers\etc\hosts"
 redirect="127.0.0.1"
-commandList = ["color", "logo", "info", "time", "stop", "q", "quit", "exit", "blocklist", "block", "unblock", "help", "cl", "clear"]
+commandList = ["os", "color", "logo", "info", "time", "stop", "q", "quit", "exit", "blocklist", "block", "unblock", "help", "cl", "clear"]
 #2p = to print
-commandList2p = ["color - Sets CMD colors\n", "logo - Draws out the logo of Blocker\n", "info - Prints out info about Blocker\n", "time - Prints the current time\n", "q/stop/quit/exit - Stops Blocker\n", "blocklist - Prints out the blocked websites\n", "block - Blocks a website\n", "unblock - Unblocks a website\n", "help - Shows you the commands Blocker knows\n", "cl/clear - Clears the console"]
+commandList2p = ["os - Prints out OS\n", "color - Sets CMD colors\n", "logo - Draws out the logo of Blocker\n", "info - Prints out info about Blocker\n", "time - Prints the current time\n", "q/stop/quit/exit - Stops Blocker\n", "blocklist - Prints out the blocked websites\n", "block - Blocks a website\n", "unblock - Unblocks a website\n", "help - Shows you the commands Blocker knows\n", "cl/clear - Clears the console"]
 #logo stuff
 logo0 = """
  ____ _            _  
@@ -68,7 +68,7 @@ def intro():
         print(logo2)
     if logo == 3:
         print(logo3)
-    print("By phantazie\n")
+    print("By phantazie\nYou're running blocker on " + platform.system() + "!")
 #clear console
 def clearConsole():
     os.system("cls")
@@ -80,30 +80,36 @@ def print_slow(text):
         time.sleep(.04)
 #main task manager
 def doTask(command):
+    if command.lower() == "os":
+        print("You're using " + platform.system() + ".")
     if "color" in command.lower() and "help" not in command.lower():
-        if " " in command:
-            if command.lower().count(" ") == 2:
-                color1 = command.split(" ")[1]
-                if str(color1) in "0123456789" or str(color1).lower() in "abcdef":
-                    color2 = command.split(" ")[2]
-                    if str(color2) in "0123456789" or str(color2).lower() in "abcdef":
-                        colors = color1 + color2
-                        os.system("color " + colors)
-                        return
+        if platform.system() == "Windows":
+            if " " in command:
+                if command.lower().count(" ") == 2:
+                    color1 = command.split(" ")[1]
+                    if str(color1) in "0123456789" or str(color1).lower() in "abcdef":
+                        color2 = command.split(" ")[2]
+                        if str(color2) in "0123456789" or str(color2).lower() in "abcdef":
+                            colors = color1 + color2
+                            os.system("color " + colors)
+                            return
+                        else:
+                            print("Invalid attributes (second color code is not valid)!")
+                            return
                     else:
-                        print("Invalid attributes (second color code is not valid)!")
+                        print("Invalid attributes (first color code is not valid)!")
                         return
-                else:
-                    print("Invalid attributes (first color code is not valid)!")
-                    return
-            print("Invalid attributes (make sure to put one space between the two color codes)!")
-            return
-        else:
-            print("0 = Black\n1 = Blue\n2 = Green\n3 = Aqua\n4 = Red\n5 = Purple\n6 = Yellow\n7 = White\n8 = Gray\n9 = Light Blue\nA = Light Green\nB = Light Aqua\nC = Light Red\nD = Light Purple\nE = Light Yellow\nF = Bright White")
-            color1 = input("What color do you want to change the background to? (provide its' code) ")
-            color2 = input("What color do you want to change the text to? (provide its' code) ")
-            colors = color1 + color2
-            os.system("color " + colors)
+                print("Invalid attributes (make sure to put one space between the two color codes)!")
+                return
+            else:
+                print("0 = Black\n1 = Blue\n2 = Green\n3 = Aqua\n4 = Red\n5 = Purple\n6 = Yellow\n7 = White\n8 = Gray\n9 = Light Blue\nA = Light Green\nB = Light Aqua\nC = Light Red\nD = Light Purple\nE = Light Yellow\nF = Bright White")
+                color1 = input("What color do you want to change the background to? (provide its' code) ")
+                color2 = input("What color do you want to change the text to? (provide its' code) ")
+                colors = color1 + color2
+                os.system("color " + colors)
+                return
+        if platform.system() == "Linux":
+            print("This function is not working on " + platform.system() + " yet...")
             return
     if command.lower() == "logo":
         logo = random.randint(0,3)
@@ -133,19 +139,33 @@ def doTask(command):
                 sys.exit("Blocker will quit now!")
         return
     if command.lower() == "blocklist":
-        sites = []
+        sites = []        
+        if platform.system() == "Windows":
+            hostsPath = "C:\Windows\System32\drivers\etc\hosts" 
+        if platform.system() == "Linux":
+            hostsPath = "/etc/hosts"
         with open(hostsPath, "r") as hosts:
             content = hosts.readlines()
             hosts.seek(0)
             for line in content:
-                if line.startswith("#"):
-                    pass
-                else:
-                    if redirect in line:
-                        site = line.split(" ")[1]
-                        if site.endswith("\n"):
-                            site = site.replace("\n", "")
-                        sites.append(site)
+                if platform.system() == "Windows":
+                    if line.startswith("#"):
+                        pass
+                    else:
+                        if redirect in line:
+                            site = line.split(" ")[1]
+                            if site.endswith("\n"):
+                                site = site.replace("\n", "")
+                            sites.append(site)
+                if platform.system() == "Linux":
+                    if line.startswith(redirect) == False:
+                        pass
+                    else:
+                        if redirect in line:
+                            site = line.split("    ")[1]
+                            if site.endswith("\n"):
+                                site = site.replace("\n", "")
+                            sites.append(site)
         sites1 = str(sites)
         #sites2 = sites1.replace(", ", "\n")
         sites2 = sites1.replace("[", "")
@@ -173,13 +193,20 @@ def doTask(command):
             answer = input("Blocker detected that you didn't enter a website. Are you sure you want to block '" + wtb + "'? ")
             if answer.lower() == "n" or answer.lower() == "no":
                 return
+        if platform.system() == "Windows":
+            hostsPath = "C:\Windows\System32\drivers\etc\hosts" 
+        if platform.system() == "Linux":
+            hostsPath = "/etc/hosts"
         with open(hostsPath, "r+") as hosts:
             content=hosts.read()
             if wtb in content:
                 print("This site is already blocked, to check the blocked websites, write: 'blocklist' !")
                 return
             else:
-                hosts.write(redirect + " " + wtb + "\n")
+                if platform.system() == "Windows":
+                    hosts.write(redirect + " " + wtb + "\n")
+                if platform.system() == "Linux":
+                    hosts.write(redirect + "    " + wtb + "\n")
         print("'" + wtb + "' is successfully blocked!")
         return
     if "unblock" in command.lower() and "help" not in command.lower():
@@ -195,6 +222,10 @@ def doTask(command):
             print("You didn't provide a website!")
             return
         writable = []
+        if platform.system() == "Windows":
+            hostsPath = "C:\Windows\System32\drivers\etc\hosts" 
+        if platform.system() == "Linux":
+            hostsPath = "/etc/hosts"
         with open (hostsPath, "r+") as hosts:
             content = hosts.readlines()
             hosts.seek(0)
@@ -214,6 +245,8 @@ def doTask(command):
     if "help" in command.lower():
         if " " in command:
             com = command.split(" ")[1].lower()
+            if com == "os":
+                print("Usage: os\nDescription: with 'os' function, you can print out your OS!")
             if com == "color":
                 print("Usage: color [attr]\n(Optional) attr [2 digits]\nThe first digit corresponds to the background, the second for the text, seperated by one space.\nIf you're not familiar with color codes, don't set attributes!\nExample: 0 6\nIf no attributes set, Blocker will help you with the usage.\nDescription: with 'color' function, you can set your terminal's colors (background and text colors).")
                 return
