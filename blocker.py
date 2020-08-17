@@ -223,6 +223,7 @@ def doTask(command):
             print("You didn't provide a website!")
             return
         writable = []
+        all = []
         if platform.system() == "Windows":
             hostsPath = "C:\Windows\System32\drivers\etc\hosts" 
         if platform.system() == "Linux":
@@ -230,19 +231,27 @@ def doTask(command):
         with open (hostsPath, "r+") as hosts:
             content = hosts.readlines()
             hosts.seek(0)
-            index = 0
             for line in content:
-                index = index + 1
-                if wtu not in line and line != len(content):
+                if wtu not in line:
                     writable.append(line)
-                if wtu not in line and wtu not in writable and index == len(content):
-                    print("This site wasn't blocked, to check the blocked websites, write: 'blocklist' !")
-                    return
-            print("Blocker successfully unblocked '" + wtu + "'!")
-            hosts.truncate()
-            for line in writable:
-                hosts.write(line)
+                    all.append(line)
+                else:
+                    all.append(line)
+            if wtu not in str(all):
+                print("This site wasn't blocked!")
+                return
+            if wtu in str(all) and wtu not in str(writable):
+                hosts.truncate()
+                for line in writable:
+                    hosts.write(line)
+                print("Blocker successfully unblocked '" + wtu + "'!")
         return
+        """if redirect in line and line.count(" ") == 1:
+                        site = line.split(" ")[1]
+                        if site.endswith("\n"):
+                            site = site.replace("\n", "")
+                        if site != "localhost" and site != "kali" and site != "ip6-allnodes" and site != "ip6-allrouters":
+                            sites.append(site)"""
     if "help" in command.lower():
         if " " in command:
             com = command.split(" ")[1].lower()
