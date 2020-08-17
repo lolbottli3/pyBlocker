@@ -152,7 +152,7 @@ def doTask(command):
                     if line.startswith("#"):
                         pass
                     else:
-                        if redirect in line:
+                        if redirect in line and command.count(" ") == 1:
                             site = line.split(" ")[1]
                             if site.endswith("\n"):
                                 site = site.replace("\n", "")
@@ -161,11 +161,12 @@ def doTask(command):
                     if line.startswith(redirect) == False:
                         pass
                     else:
-                        if redirect in line:
-                            site = line.split("    ")[1]
+                        if redirect in line and command.count(" ") == 1:
+                            site = line.split(" ")[1]
                             if site.endswith("\n"):
                                 site = site.replace("\n", "")
-                            sites.append(site)
+                            if site != "localhost" and site != "kali" and site != "ip6-allnodes" and site != "ip6-allrouters":
+                                sites.append(site)
         sites1 = str(sites)
         #sites2 = sites1.replace(", ", "\n")
         sites2 = sites1.replace("[", "")
@@ -195,18 +196,32 @@ def doTask(command):
                 return
         if platform.system() == "Windows":
             hostsPath = "C:\Windows\System32\drivers\etc\hosts" 
+            with open(hostsPath, "r+") as hosts:
+                content=hosts.read()
+                if wtb in content:
+                    print("This site is already blocked, to check the blocked websites, write: 'blocklist' !")
+                    return
+                else:
+                    """if platform.system() == "Windows":
+                        hosts.write(redirect + " " + wtb + "\n")
+                    if platform.system() == "Linux":
+                        hosts.write(redirect + "    " + wtb + "\n")"""
+                    hosts.write(redirect + " " + wtb + "\n")
         if platform.system() == "Linux":
             hostsPath = "/etc/hosts"
-        with open(hostsPath, "r+") as hosts:
-            content=hosts.read()
-            if wtb in content:
-                print("This site is already blocked, to check the blocked websites, write: 'blocklist' !")
-                return
-            else:
-                if platform.system() == "Windows":
-                    hosts.write(redirect + " " + wtb + "\n")
-                if platform.system() == "Linux":
-                    hosts.write(redirect + "    " + wtb + "\n")
+            with open(hostsPath, "r+") as hosts:
+                content = hosts.readlines()
+                hosts.seek(0)
+                for line in content:
+                    if "kali" in line or "localhost" in line:
+                        continue
+                    if wtb in line:
+                        print("The site is already blocked!")
+                        break
+                    else:
+                        if line == "" or line == "\n" or line == " ":
+                            hosts.write(redirect + " " + wtb + "\n")
+                            break
         print("'" + wtb + "' is successfully blocked!")
         return
     if "unblock" in command.lower() and "help" not in command.lower():
